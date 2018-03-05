@@ -1,8 +1,6 @@
-# glslify-big-triangle-boilerplate
+# webcam-shader-boilerplate
 
-This is an opinionated starter repo for writing fragment shader code with the aid of the glslify ecosystem.
-
-(Want to get started right away in your browser? Consider [glslb.in](http://glslb.in/). )
+This is an opinionated starter repo for writing fragment shader code that interacts with webcam input in the browser!
 
 `npm run start` to start the devserver.
 

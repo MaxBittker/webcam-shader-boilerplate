@@ -2,15 +2,22 @@ import { setupOverlay } from "regl-shader-error-overlay";
 setupOverlay();
 
 const regl = require("regl")({ pixelRatio: 1 });
-const wc = require("./regl-webcam");
+import wc from "./regl-webcam";
 
 let fsh = require("./fragment.glsl");
+let vsh = require("./vertex.glsl");
 
 const lastFrame = regl.texture();
 const pixels = regl.texture();
+let ct;
 let cam = wc({
   regl,
-  done: (webcam, { videoWidth, videoHeight }) => {
+  done: (webcam, { videoWidth, videoHeight, ctracker }) => {
+    ct = ctracker;
+    window.ct = ct;
+    console.log(ct);
+    // console.log(ctracker.getCurrentPosition())
+    // console.log(ctracker.getCurrentPosition())
     let drawTriangle = regl({
       frag: fsh,
       uniforms: {
@@ -22,26 +29,28 @@ let cam = wc({
           viewportWidth,
           viewportHeight
         ],
-        backBuffer: lastFrame
-
+        backBuffer: lastFrame,
+        "eyes[0]": () => {
+          let positions = ct.getCurrentPosition();
+          if( positions){
+            return positions[27];
+          }else{
+            return [0,0];
+          }
+        },
+        "eyes[1]": () => {
+          let positions = ct.getCurrentPosition();
+          if( positions){
+            return positions[32];
+          }else{
+            return [0,0];
+          }
+        }
         // Many datatypes are supported here.
         // See: https://github.com/regl-project/regl/blob/gh-pages/API.md#uniforms
       },
 
-      /*
-  Attributes you don't need to modify if you just want to write full bleed fragment shaders:
-  */
-
-      vert: `
-  // boring "pass-through" vertex shader
-  precision mediump float;
-  attribute vec2 position;
-  varying vec2 uv;
-
-  void main () {
-    uv = position;
-    gl_Position = vec4(position, 0, 1);
-  }`,
+      vert: vsh,
       attributes: {
         // Full screen triangle
         position: [[-1, 4], [-1, -1], [4, -1]]

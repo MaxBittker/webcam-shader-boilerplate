@@ -1,25 +1,95 @@
-const getUserMedia = require("getusermedia");
+import clmtrackr from "clmtrackr";
+let ctracker = new clmtrackr.tracker();
+ctracker.init();
 
-module.exports = function(options) {
+function setupWebcam(options) {
   const regl = options.regl;
-  getUserMedia({ video: true, audio: false }, function(err, stream) {
-    if (err) {
-      options.error && options.error(err);
-      return;
-    }
-    const video = document.createElement("video");
-    video.src = window.URL.createObjectURL(stream);
-    document.body.appendChild(video);
-    video.addEventListener("loadedmetadata", () => {
-      video.play();
-      const webcam = regl.texture(video);
-      const { videoWidth, videoHeight } = video;
+  var video = null;
+  var canvas = null;
 
-      regl.frame(() => webcam.subimage(video));
-      options.done(webcam, {
-        videoWidth,
-        videoHeight
-      });
-    });
-  });
-};
+  function startup() {
+    video = document.getElementById("video");
+    canvas = document.getElementById("canvas");
+    let startbutton = document.getElementById("start");
+
+    var trackingStarted = false;
+
+    function tryGetUserMedia() {
+      navigator.mediaDevices
+        .getUserMedia({
+          video: true,
+          audio: false
+        })
+        .then(gumSuccess)
+        .catch(e => {
+          console.log("initial gum failed");
+        });
+      video.play();
+      startbutton.hidden = true;
+    }
+
+    tryGetUserMedia();
+
+    startbutton.onclick = function() {
+      console.log("play!");
+      tryGetUserMedia();
+      // startVideo();
+    };
+
+    function gumSuccess(stream) {
+      if ("srcObject" in video) {
+        video.srcObject = stream;
+      } else {
+        video.src = window.URL && window.URL.createObjectURL(stream);
+      }
+      video.onloadedmetadata = function() {
+        console.log("metadata loaded");
+        const webcam = regl.texture(video);
+
+        const { videoWidth, videoHeight } = video;
+
+        var w = videoWidth;
+        var h = videoHeight;
+        video.height = h;
+        video.width = w;
+        ctracker.init();
+        ctracker.start(video);
+        // positionLoop();
+
+        regl.frame(() => webcam.subimage(video));
+        options.done(webcam, {
+          videoWidth,
+          videoHeight,
+          ctracker
+        });
+      };
+    }
+    // function adjustVideoProportions() {
+    //   // resize overlay and video if proportions of video are not 4:3
+    //   // keep same height, just change width
+    //   debugger
+    //   var proportion = video.videoWidth/video.videoHeight;
+    //   video_width = Math.round(video_height * proportion);
+    //   video.width = video_width;
+    // }
+    video.onresize = function() {
+      // adjustVideoProportions();
+      // if (trackingStarted) {
+      // ctracker.stop();
+      // ctracker.reset();
+      // ctracker.start(video);
+      // }
+    };
+    video.addEventListener(
+      "canplay",
+      function(ev) {
+        video.play();
+      },
+      false
+    );
+  }
+
+  window.onload = startup;
+}
+
+export default setupWebcam;

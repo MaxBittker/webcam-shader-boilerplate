@@ -35,7 +35,7 @@ let cam = wc({
           if( positions){
             return positions[27];
           }else{
-            return [0,0];
+            return [5000,5000];
           }
         },
         "eyes[1]": () => {
@@ -43,7 +43,7 @@ let cam = wc({
           if( positions){
             return positions[32];
           }else{
-            return [0,0];
+            return [5000,5000];
           }
         }
         // Many datatypes are supported here.

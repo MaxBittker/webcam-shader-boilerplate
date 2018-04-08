@@ -9,7 +9,7 @@
 
     <button id='start'>Click me</button>
 
-    <video id="video"  loop playsinline autoplay/>
+    <video id="video" loop playsinline autoplay/>
     <style>
       video {
         /* height: 100vh; */
@@ -23,7 +23,8 @@
         width: 100px;
         height: 50px;
       }
-      canvas{
+
+      canvas {
         position: absolute;
         z-index: 999;
         width: 100%;
@@ -31,12 +32,13 @@
         padding: 0;
         margin: 0;
       }
-        body{
-          width: 100vw;
-        }
+
+      body {
+        width: 100vw;
+      }
     </style>
   </body>
-  <script src="./node_modules/webrtc-adapter/out/adapter.js" type="text/javascript"></script>
+  <script src="./adapter.js" type="text/javascript"></script>
   <script src="./dist/bundle.js" type="text/javascript"></script>
 
 </html>

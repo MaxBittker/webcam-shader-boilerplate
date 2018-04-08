@@ -1,0 +1,25 @@
+{
+  "name": "glsl-color",
+  "version": "0.0.1",
+  "description": "Color manipulation in glsl",
+  "author": "Gustavo Spredemann <gspredemann@gmail.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "glsl",
+    "glslify",
+    "color",
+    "rgb",
+    "hsv",
+    "hsl"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/spredemann/glsl-color.git"
+  },
+  "homepage": "https://github.com/spredemann/glsl-color",
+  "bugs": {
+    "url": "https://github.com/spredemann/glsl-color/issues"
+  }
+}

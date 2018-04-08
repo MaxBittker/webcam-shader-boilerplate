@@ -292,7 +292,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 Object(__WEBPACK_IMPORTED_MODULE_0_regl_shader_error_overlay__["setupOverlay"])();
 
-const regl = __webpack_require__(4)({ pixelRatio: 1 });
+const regl = __webpack_require__(4)({ pixelRatio: 0.75 });
 
 
 let fsh = __webpack_require__(10);

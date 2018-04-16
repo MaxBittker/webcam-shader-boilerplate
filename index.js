@@ -1,7 +1,7 @@
 import { setupOverlay } from "regl-shader-error-overlay";
 setupOverlay();
 
-const regl = require("regl")({ pixelRatio: 1 });
+const regl = require("regl")({ pixelRatio: 0.75 });
 import wc from "./regl-webcam";
 
 let fsh = require("./fragment.glsl");

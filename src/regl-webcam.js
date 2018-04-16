@@ -1,4 +1,4 @@
-import clmtrackr from "clmtrackr";
+let clmtrackr = require("clmtrackr");
 let ctracker = new clmtrackr.tracker();
 ctracker.init();
 
@@ -92,4 +92,4 @@ function setupWebcam(options) {
   window.onload = startup;
 }
 
-export default setupWebcam;
+module.exports = { setupWebcam };

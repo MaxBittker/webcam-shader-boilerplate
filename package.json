@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
+    "start":
+      "./node_modules/.bin/shader-reload-cli index.js:bundle.js --dir dist/ --cors"
   },
   "author": "maxbittker <maxbittker@gmail.com> (maxbittker.github.io)",
   "license": "ISC",
@@ -25,9 +26,6 @@
   },
   "devDependencies": {
     "glslify": "^6.1.0",
-    "glslify-loader": "^1.0.2",
-    "raw-loader": "^0.5.1",
-    "webpack": "^3.8.1",
-    "webpack-dev-server": "^2.9.4"
+    "shader-reload-cli": "^1.0.0"
   }
 }

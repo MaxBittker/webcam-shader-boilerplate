@@ -18,6 +18,8 @@ shaders.on("change", () => {
 const lastFrame = regl.texture();
 const pixels = regl.texture();
 let ct;
+let last27 = [0,0];
+let last32 = [0,0];
 let cam = setupWebcam({
   regl,
   done: (webcam, { videoWidth, videoHeight, ctracker }) => {
@@ -40,17 +42,19 @@ let cam = setupWebcam({
         "eyes[0]": () => {
           let positions = ct.getCurrentPosition();
           if (positions) {
+            last27 = positions[27];
             return positions[27];
           } else {
-            return [5000, 5000];
+            return last27
           }
         },
         "eyes[1]": () => {
           let positions = ct.getCurrentPosition();
           if (positions) {
+            last32 = positions[32];
             return positions[32];
           } else {
-            return [5000, 5000];
+            return last32
           }
         }
         // Many datatypes are supported here.

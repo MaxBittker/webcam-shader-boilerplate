@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":
-      "./node_modules/.bin/shader-reload-cli index.js:bundle.js --dir dist/ --cors",
-    "build":
-      "./node_modules/.bin/browserify -t glslify -g uglifyify index.js -o dist/bundle.js"
+    "start": "./node_modules/.bin/shader-reload-cli index.js:bundle.js --dir dist/ --cors",
+    "build": "./node_modules/.bin/browserify -t glslify -g uglifyify index.js -o dist/bundle.js"
   },
   "author": "maxbittker <maxbittker@gmail.com> (maxbittker.github.io)",
   "license": "ISC",

@@ -36,28 +36,23 @@ void main() {
   vec2 suck = -2.0 * pixel * normalize(flipwcord - closeEye) *
               random(uv + t * vec2(1.0));
   // *(0.5 + noise(vec3(uv * 10., t * 5.)));
-
-  vec3 color2 = texture2D(backBuffer, textCoord + suck).rgb * 0.95;
+  vec2 fall = 5. * pixel * vec2(0, -1.0) * random(uv + t * vec2(1.0));
+  vec3 color2 = texture2D(backBuffer, textCoord - fall).rgb * 1.0;
 
   vec3 webcamColor = texture2D(webcam, flipwcord).rgb * 0.95;
-  float ed = smin(distance(eye1, flipwcord), distance(eye2, flipwcord), 0.1);
+  float ed = smin(distance(eye1, flipwcord), distance(eye2, flipwcord), 0.01);
 
-  // float r = length(pos)*2.0;
-  // float a = atan(pos.y,pos.x);
-  float s = 0.1 * distance(eye1, eye2) * 4.;
-  if (ed < s) {
+  float ifd = distance(eye1, eye2);
+  float s = 0.1 * ifd * 4.;
+  vec2 mid = (eye1 + eye2) * 0.5;
+  // if (ed < s) {
+  if (distance(mid.x, flipwcord.x) < (ifd * 1.0) &&
+      mid.y - flipwcord.y < ifd * 0.2 * sin(t * 0.04)) {
     float weight = luma(webcamColor);
-    // color = weight * vec3(0.8, 0.8, 0.9) * (s - ed) * 10.;
-    // color += sin(ed * 100. + t * 0.1) * vec3(0.6, 0.1, 0.1);
     color = color2;
-    // color = weight * vec3(0.8, 0.8, 0.9);
-
-    // max(color, color2 * 0.999);
   } else {
     float weight = luma(webcamColor);
-    // color = webcamColor;
     color = weight * vec3(0.8, 0.8, 1.0);
-    // color = webcamColor;
   }
 
   gl_FragColor = vec4(color, 1.0);

@@ -36,8 +36,6 @@ void main() {
   vec2 suck = -2.0 * pixel * normalize(flipwcord - closeEye) *
               random(uv + t * vec2(1.0));
   // *(0.5 + noise(vec3(uv * 10., t * 5.)));
-  vec2 fall = 5. * pixel * vec2(0, -1.0) * random(uv + t * vec2(1.0));
-  vec3 color2 = texture2D(backBuffer, textCoord - fall).rgb * 1.0;
 
   vec3 webcamColor = texture2D(webcam, flipwcord).rgb * 0.95;
   float ed = smin(distance(eye1, flipwcord), distance(eye2, flipwcord), 0.01);
@@ -45,15 +43,48 @@ void main() {
   float ifd = distance(eye1, eye2);
   float s = 0.1 * ifd * 4.;
   vec2 mid = (eye1 + eye2) * 0.5;
-  // if (ed < s) {
-  if (distance(mid.x, flipwcord.x) < (ifd * 1.0) &&
-      mid.y - flipwcord.y < ifd * 0.2 * sin(t * 0.04)) {
-    float weight = luma(webcamColor);
-    color = color2;
+  if (uv.x < -1. + pixel.x * 5.) {
+    if (mod(t, 20.) > 18.) {
+      color = vec3(1., 1., 1.);
+    } else {
+      color = vec3(0.2, 0.3, 0.4);
+    }
   } else {
     float weight = luma(webcamColor);
-    color = weight * vec3(0.8, 0.8, 1.0);
+
+
+  float edge =  
+  luma(texture2D(webcam, flipwcord-pixel.x).rgb)-luma(texture2D(webcam, flipwcord+pixel.x).rgb);
+
+  edge*=3.;
+
+    if (
+    distance(mid.x, flipwcord.x) < (ifd * 1.0) &&
+      mid.y - flipwcord.y < ifd * 1.8 &&
+      mid.y - flipwcord.y > ifd * -2.5
+    ){
+    }else{
+      weight *= 0.8;
+    }
+    vec2 fall = 2. * pixel * vec2(1., 0) * (0.5 + random(vec2(uv.y,t))*0.5) * (1. -weight) ;
+
+    color = texture2D(backBuffer, textCoord - fall ).rgb * 1.0;
+    if(uv.y<0.0){
+      // color =weight * vec3(1.0);
+    }
   }
+
+  // if (ed < s) {
+    // distance(mid,flipwcord)<0.2
+  if (
+    distance(mid.x, flipwcord.x) < (ifd * 1.0) &&
+      mid.y - flipwcord.y < ifd * 1.8 &&
+      mid.y - flipwcord.y > ifd * -2.5
+      ){
+    float weight = luma(webcamColor);
+      // color =weight * vec3(1.0);
+    
+  } 
 
   gl_FragColor = vec4(color, 1.0);
 }

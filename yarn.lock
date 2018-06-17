@@ -1364,6 +1364,10 @@ glsl-smooth-min@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/glsl-smooth-min/-/glsl-smooth-min-1.0.0.tgz#93f00a06675be789933676e9210cd597ad5b1c57"
 
+glsl-square-frame@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/glsl-square-frame/-/glsl-square-frame-1.0.1.tgz#60f03b9c1309acda435be841d78194d8966d8533"
+
 glsl-token-assignments@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/glsl-token-assignments/-/glsl-token-assignments-2.0.2.tgz#a5d82ab78499c2e8a6b83cb69495e6e665ce019f"

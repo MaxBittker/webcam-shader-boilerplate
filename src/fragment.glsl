@@ -74,77 +74,57 @@ void main() {
 
   float s = 0.1 * ifd * 4.;
   vec2 mid = (eye1 + eye2) * 0.5;
-  color = vec3(1.0, 0.95, 0.95);
 
-  vec2 ruv = uv;
-  float p = 0.1;
-  ruv.y = mod(uv.y, p * 1.4);
-  float f = 40.;
-  // f *= luma(webcamColor)
-  ruv.x += luma(webcamColor) * 0.5;
-  float wave = (1.0 + sin(t * 0.1 + ruv.x * f)) * p * 0.5;
-  if (ruv.y > wave && ruv.y < wave + pixel.y * 15.) {
-    color = vec3(0.1, 0.1, 0.4);
-  }
   color = vec3(0.9, 0.89, 0.87);
 
   vec3 red = vec3(0.9, 0.25, 0.);
-  vec3 yellow = vec3(0.95, 0.8, 0.);
+  vec3 yellow = vec3(0.85, 0.7, 0.);
   vec3 brown = vec3(0.4, 0.2, 0.1);
   // vec3 hue = red;
   // pos += noise(vec3(pos * 15., 0.5)) * 0.01;
   float m = 100.;
-  // for (float c = 0.; c < 3.; c++) {
-  //   if (c == 1.) {
-  //     hue = yellow;
-  //   }
-  //   if (c == 2.) {
-  //     hue = brown;
-  //   }
-  //   vec2 vor = worley2D(pos * 10. + vec2(200.) * c, 1.0, false);
-  //   float dots = vor.x;
-  //   float cell = vor.y;
-
-  //   float dilation = noise(vec3(pos * 2.5 + vec2(200.) * c, t * 0.01));
-  //   // dilation = (1.0 - length(abs(webcamColor.rgb * hue)));
-  //   // float dd = dots + min(dilation, 0.75) * 1.0;
-  //   // dilation = max(dilation, 0.2);
-  //   float dd = (cell - dots) * (1.0 - dots * 1.0);
-  //   // dd *= max(dilation, 0.3);
-  //   dilation = max(0.2 * dd, dilation);
-  //   dd *= dilation;
-  //   // if (dd > 0.05 && dd < m) {
-  //   if (dd > 0.05) {
-  //     //  color = hue;
-  //   }
-  //   // dd = min(dd, m);
-  // }
-  // vec3 col = 0.5 + 0.5 * cos(vor.y * 6.2831 + vec3(0.0, 1.0, 2.0));
-  // col *= clamp(1.0 - 0.4 * vor.x * vor.x, 0.0, 1.0);
-  // col -= (1.0 - smoothstep(0.08, 0.09, vor.x));
-
-  // color = red * dots;
-  // hsv2rgb(vec3(cell, 0.5, 0.5));
-  // m = min(dd, m);
-  // }
-  // if (dd < 0.1) {
-  // }
-  vec3 c = voronoi(10.0 * pos);
+  vec3 c = voronoi(60.0 * pos);
 
   // colorize
-  float hue = 0.2 + (floor(c.z * 3.) / 9.);
-  vec3 col = hsv2rgb(vec3(hue, 0.9, 0.5));
+  vec3 col = red;
+  float h = 0.;
+  if (c.z < 1.2) {
+    h = 1.;
+  }
+  if (c.z < 0.7) {
+    h = 2.;
+  }
+  // col += c.x * 0.5;
+  // vec3 col = hsv2rgb(vec3(hue, 0.4, 0.6));
   // 0.5 + 0.5 * cos(c.y * 6.2831 + vec3(0.0, 1.0, 2.0));
   // col *= clamp(1.0 - 0.4 * c.x * c.x, 0.0, 1.0);
   // col -= (1.0 - smoothstep(0.08, 0.09, c.x));
-  float dilation = noise(vec3(pos * 1.0 + (vec2(200.) * hue), t * 0.01)) + 0.5;
+  col = hsv2rgb(vec3(0.0, 1.0, 0.9));
+  if (c.z < 1.2) {
+    col = hsv2rgb(vec3(0.1, 0.9, 0.9));
+  }
+  if (c.z < 0.7) {
+    col = hsv2rgb(vec3(0.05, 0.9, 0.35));
+  }
+  float dilation = noise(vec3(pos * 1.0 + (vec2(0.5) * h), t * 0.01)) + 0.7;
 
-  // dilation = luma(webcamColor) ;
+  dilation = 1.0 - length(webcamColor);
   float dd = (c.y - c.x) * (1.0 - c.x * 1.0);
   dd *= dilation;
   dd *= 2.;
-  if (dd > 0.5 || c.x < 0.05) {
+
+  col = hsv2rgb(vec3(0.0, 1.0 - (dilation * 0.3) - c.x * 0.2, 0.9));
+  if (c.z < 1.2) {
+    col = hsv2rgb(vec3(0.1, 0.9 - dilation * 0.2, 0.9));
+  }
+  if (c.z < 0.7) {
+    col = hsv2rgb(vec3(0.05, 0.9, 0.35));
+  }
+
+  if (dd > 0.4 || c.x < 0.05) {
     color = col;
+  } else {
+    color += col * 0.03;
   }
   // color = (c.y - c.x) * col;
   // vec3 cel = cellular(pos * 5.);

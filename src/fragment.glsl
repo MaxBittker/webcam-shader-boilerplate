@@ -75,14 +75,14 @@ void main() {
   float s = 0.1 * ifd * 4.;
   vec2 mid = (eye1 + eye2) * 0.5;
 
-  color = vec3(0.9, 0.89, 0.87);
+  color = vec3(0.09, 0.089, 0.087);
 
   vec3 red = vec3(0.9, 0.25, 0.);
   vec3 yellow = vec3(0.85, 0.7, 0.);
   vec3 brown = vec3(0.4, 0.2, 0.1);
   // vec3 hue = red;
-  // pos += noise(vec3(pos * 15., 0.5)) * 0.01;
   float m = 100.;
+  // pos += noise(vec3(pos * 15., 0.5)) * 0.01;
   vec3 c = voronoi(60.0 * pos);
 
   // colorize
@@ -106,19 +106,24 @@ void main() {
   if (c.z < 0.7) {
     col = hsv2rgb(vec3(0.05, 0.9, 0.35));
   }
-  float dilation = noise(vec3(pos * 1.0 + (vec2(0.5) * h), t * 0.01)) + 0.7;
+  vec2 spos = pos += noise(vec3(pos * 2., 0.5 + t * 0.001)) * 0.5;
 
-  dilation = 1.0 - length(webcamColor);
+  float dilation =
+      noise(vec3((spos * vec2(1.0, 5.)) + vec2(0., t * 0.01) + (vec2(0.3) * h),
+                 t * 0.01)) +
+      0.3;
+
+  // dilation = 1.0 - abs(length(webcamColor - col));
   float dd = (c.y - c.x) * (1.0 - c.x * 1.0);
   dd *= dilation;
-  dd *= 2.;
+  dd *= 1.5;
 
-  col = hsv2rgb(vec3(0.0, 1.0 - (dilation * 0.3) - c.x * 0.2, 0.9));
+  col = hsv2rgb(vec3(0.6, 1.0 - (dilation * 0.3) - c.x * 0.2, 0.7));
   if (c.z < 1.2) {
-    col = hsv2rgb(vec3(0.1, 0.9 - dilation * 0.2, 0.9));
+    col = hsv2rgb(vec3(0.2, 0.6 - dilation * 0.2, 0.9));
   }
   if (c.z < 0.7) {
-    col = hsv2rgb(vec3(0.05, 0.9, 0.35));
+    col = hsv2rgb(vec3(0.1, 0.9, 0.85));
   }
 
   if (dd > 0.4 || c.x < 0.05) {

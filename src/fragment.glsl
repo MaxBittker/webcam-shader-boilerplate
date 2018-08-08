@@ -83,7 +83,7 @@ void main() {
   // vec3 hue = red;
   float m = 100.;
   // pos += noise(vec3(pos * 15., 0.5)) * 0.01;
-  vec3 c = voronoi(60.0 * pos);
+  vec3 c = voronoi((40.0 + 5. * noise(vec3(pos * 0.01, 0.))) * pos);
 
   // colorize
   vec3 col = red;
@@ -129,7 +129,7 @@ void main() {
   if (dd > 0.4 || c.x < 0.05) {
     color = col;
   } else {
-    color += col * 0.03;
+    color += col * 0.001;
   }
   // color = (c.y - c.x) * col;
   // vec3 cel = cellular(pos * 5.);

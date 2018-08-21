@@ -19,12 +19,14 @@ shaders.on("change", () => {
 
 const lastFrame = regl.texture();
 const pixels = regl.texture();
+let audioBuffer = null;
+
 let ct;
 let last27 = [0, 0];
 let last32 = [0, 0];
 let cam = setupWebcam({
   regl,
-  done: (webcam, { videoWidth, videoHeight, ctracker }) => {
+  done: (webcam, { audio, videoWidth, videoHeight, ctracker }) => {
     ct = ctracker;
     window.ct = ct;
     console.log(ct);
@@ -66,7 +68,37 @@ let cam = setupWebcam({
         "m[4]": () => getMidiValue(4),
         "m[5]": () => getMidiValue(5),
         "m[6]": () => getMidiValue(6),
-        "m[7]": () => getMidiValue(7)
+        "m[7]": () => getMidiValue(7),
+        bands: () => {
+          let bands = new Array(4);
+          var k = 0;
+          var f = 0.0;
+          var a = 5,
+            b = 11,
+            c = 24,
+            d = 512,
+            i = 0;
+          for (; i < a; i++) f += audioBuffer[i];
+          f *= 0.2; // 1/(a-0)
+          f *= 0.003921569; // 1/255
+          bands[0] = f;
+          f = 0.0;
+          for (; i < b; i++) f += audioBuffer[i];
+          f *= 0.166666667; // 1/(b-a)
+          f *= 0.003921569; // 1/255
+          bands[1] = f;
+          f = 0.0;
+          for (; i < c; i++) f += audioBuffer[i];
+          f *= 0.076923077; // 1/(c-b)
+          f *= 0.003921569; // 1/255
+          bands[2] = f;
+          f = 0.0;
+          for (; i < d; i++) f += audioBuffer[i];
+          f *= 0.00204918; // 1/(d-c)
+          f *= 0.003921569; // 1/255
+          bands[3] = f;
+          return bands;
+        }
         // Many datatypes are supported here.
         // See: https://github.com/regl-project/regl/blob/gh-pages/API.md#uniforms
       },
@@ -82,6 +114,13 @@ let cam = setupWebcam({
     });
 
     regl.frame(function(context) {
+      window.a = audio;
+
+      if (!audioBuffer) {
+        audioBuffer = new Uint8Array(audio.frequencyBinCount);
+      }
+      audio.getByteFrequencyData(audioBuffer);
+
       regl.clear({
         color: [0, 0, 0, 1]
       });

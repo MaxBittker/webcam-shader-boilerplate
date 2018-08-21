@@ -2,6 +2,32 @@ let clmtrackr = require("clmtrackr");
 let ctracker = new clmtrackr.tracker();
 ctracker.init();
 
+// const getUserMedia = require("getusermedia");
+
+// function audioAnalyzer(options) {
+//   const regl = options.regl;
+
+// getUserMedia({ audio: true }, function(err, stream) {
+//   if (err) {
+//     options.error && options.error(err);
+//     return;
+//   }
+
+//   //
+//   var context = new AudioContext();
+//   var analyser = context.createAnalyser({
+//     fftSize: 512,
+//     smoothingTimeConstant: 0.5
+//   });
+//   let source = context.createMediaStreamSource(stream);
+//   source.connect(analyser);
+//   // regl.frame(() => webcam.subimage(video));
+//   // options.done(analyser, {});
+// });
+// }
+
+// module.exports = { audioAnalyzer };
+
 function setupWebcam(options) {
   const regl = options.regl;
   var video = null;
@@ -18,11 +44,12 @@ function setupWebcam(options) {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
-          audio: false
+          audio: true
         })
         .then(gumSuccess)
         .catch(e => {
           console.log("initial gum failed");
+          console.log(e);
         });
       video.play();
       startbutton.hidden = true;
@@ -37,6 +64,14 @@ function setupWebcam(options) {
     };
 
     function gumSuccess(stream) {
+      var context = new AudioContext();
+      var analyser = context.createAnalyser({
+        fftSize: 256,
+        smoothingTimeConstant: 0.5
+      });
+      let source = context.createMediaStreamSource(stream);
+      source.connect(analyser);
+
       if ("srcObject" in video) {
         video.srcObject = stream;
       } else {
@@ -58,28 +93,14 @@ function setupWebcam(options) {
 
         regl.frame(() => webcam.subimage(video));
         options.done(webcam, {
+          audio: analyser,
           videoWidth,
           videoHeight,
           ctracker
         });
       };
     }
-    // function adjustVideoProportions() {
-    //   // resize overlay and video if proportions of video are not 4:3
-    //   // keep same height, just change width
-    //   debugger
-    //   var proportion = video.videoWidth/video.videoHeight;
-    //   video_width = Math.round(video_height * proportion);
-    //   video.width = video_width;
-    // }
-    video.onresize = function() {
-      // adjustVideoProportions();
-      // if (trackingStarted) {
-      // ctracker.stop();
-      // ctracker.reset();
-      // ctracker.start(video);
-      // }
-    };
+
     video.addEventListener(
       "canplay",
       function(ev) {

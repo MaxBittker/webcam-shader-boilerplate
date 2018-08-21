@@ -5,7 +5,15 @@ uniform sampler2D backBuffer;
 uniform sampler2D webcam;
 uniform vec2 videoResolution;
 uniform vec2 eyes[2];
-
+uniform float m[8]; // midi
+float m0 = m[0];
+float m1 = m[1];
+float m2 = m[2];
+float m3 = m[3];
+float m4 = m[4];
+float m5 = m[5];
+float m6 = m[6];
+float m7 = m[7];
 varying vec2 uv;
 
 // clang-format off
@@ -203,7 +211,7 @@ vec4 dither8x8(vec2 position, vec4 color) {
 }
 
 const int lookupSize = 32;
-const float errorCarry = 0.10;
+float errorCarry = m0 / 100.;
 float getGrayscale(vec2 coords) {
   // vec2 uv = coords / resolution.xy;
   // uv.y = 1.0 - uv.y;
@@ -215,7 +223,7 @@ void main() {
   vec3 color;
   vec2 webcamCoord = (uv * 0.5 + vec2(0.5)) * resolution / videoResolution;
   vec2 flipwcord = vec2(1.) - webcamCoord;
-  flipwcord.x = webcamCoord.x;
+  // flipwcord.x = webcamCoord.x;
   vec2 eye1 = eyes[0] / videoResolution;
   vec2 eye2 = eyes[1] / videoResolution;
   vec2 textCoord = uv * 0.5 + vec2(0.5);
@@ -252,9 +260,9 @@ void main() {
   float finalGrayscale = getGrayscale(flipwcord);
   finalGrayscale += xError * 0.5 + yError * 0.5;
   float finalBit = finalGrayscale >= 0.5 ? 1.0 : 0.0;
-  gl_FragColor = vec4(finalGrayscale, finalGrayscale, finalGrayscale, 1);
 
-  // gl_FragColor = vec4(finalBit, finalBit, finalBit, 1);
+  // gl_FragColor = vec4(finalGrayscale, finalGrayscale, finalGrayscale, 1);
+  gl_FragColor = vec4(finalBit, finalBit, finalBit, 1);
 
   // gl_FragColor = vec4(vec3(1.0) * getGrayscale(flipwcord), 1.0);
 }

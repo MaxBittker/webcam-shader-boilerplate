@@ -3,6 +3,8 @@ setupOverlay();
 
 const regl = require("regl")({ pixelRatio: 0.75 });
 const { setupWebcam } = require("./src/regl-webcam");
+let { getMidiValue } = require("./src/midi");
+
 let shaders = require("./src/pack.shader.js");
 let vert = shaders.vertex;
 let frag = shaders.fragment;
@@ -18,8 +20,8 @@ shaders.on("change", () => {
 const lastFrame = regl.texture();
 const pixels = regl.texture();
 let ct;
-let last27 = [0,0];
-let last32 = [0,0];
+let last27 = [0, 0];
+let last32 = [0, 0];
 let cam = setupWebcam({
   regl,
   done: (webcam, { videoWidth, videoHeight, ctracker }) => {
@@ -45,7 +47,7 @@ let cam = setupWebcam({
             last27 = positions[27];
             return positions[27];
           } else {
-            return last27
+            return last27;
           }
         },
         "eyes[1]": () => {
@@ -54,9 +56,17 @@ let cam = setupWebcam({
             last32 = positions[32];
             return positions[32];
           } else {
-            return last32
+            return last32;
           }
-        }
+        },
+        "m[0]": () => getMidiValue(0),
+        "m[1]": () => getMidiValue(1),
+        "m[2]": () => getMidiValue(2),
+        "m[3]": () => getMidiValue(3),
+        "m[4]": () => getMidiValue(4),
+        "m[5]": () => getMidiValue(5),
+        "m[6]": () => getMidiValue(6),
+        "m[7]": () => getMidiValue(7)
         // Many datatypes are supported here.
         // See: https://github.com/regl-project/regl/blob/gh-pages/API.md#uniforms
       },

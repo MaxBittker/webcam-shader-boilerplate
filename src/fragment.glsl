@@ -222,7 +222,7 @@ float getGrayscale(vec2 coords) {
 }
 void main() {
   vec2 pos = squareFrame(resolution);
-  vec3 color;
+  // vec3 color;
   vec2 webcamCoord = (uv * 0.5 + vec2(0.5)) * resolution / videoResolution;
   vec2 flipwcord = vec2(1.) - webcamCoord;
   // flipwcord.x = webcamCoord.x;
@@ -264,20 +264,36 @@ void main() {
   float finalBit = finalGrayscale >= 0.5 ? 1.0 : 0.0;
 
   // gl_FragColor = vec4(finalGrayscale, finalGrayscale, finalGrayscale, 1);
-  // gl_FragColor = vec4(finalBit, finalBit, finalBit, 1);
+  gl_FragColor = vec4(finalBit, finalBit, finalBit, 1);
 
   // gl_FragColor = vec4(vec3(1.0) * getGrayscale(flipwcord), 1.0);
-  // gl_FragColor.rgb = dither8x8(flipwcord, vec3(getGrayscale(flipwcord)));
+  // gl_FragColor.rgb = ither8x8(flipwcord, vec3(getGrayscale(flipwcord)));
 
-  vec2 offset = pixel * 10. * m2 * (bands.zy - m3 * 0.1);
-  vec3 rgb = texture2D(webcam, flipwcord - offset).rgb * 0.95;
-  vec3 rgb2 = texture2D(webcam, flipwcord + offset).rgb * 0.95;
+  // float a = t * m6;
+  // a += bands.y * m5;
+  // vec2 offset = pixel * 50. * vec2(sin(a), cos(a)) * m3 * bands.x;
+  // vec3 rgb = texture2D(webcam, flipwcord - offset).rgb * 0.95;
+  // vec3 rgb2 = texture2D(webcam, flipwcord + offset).rgb * 0.95;
 
+  vec3 color = vec3(00.0);
+  const int nL = 5;
+  for (int leaf = 0; leaf < nL; leaf++) {
+    float a = float(leaf) * 3.14 * 2. / float(nL);
+    a += t * m6;
+    vec2 offset =
+        pixel * 50. * vec2(sin(a), cos(a)) * m3 * (bands.x - m4 * 0.1);
+    vec3 rgb = texture2D(webcam, flipwcord - offset).rgb * 0.95;
+
+    // color = min(color, rgb);
+    color = abs(color - rgb);
+  }
+  color = mod(color, 1.0);
   // gl_FragColor
   // rgb += vec3(1.0) * t * 0.01 - ed;
   // rgb += bands.xyz * m1;
   // rgb = mod(rgb, 1.0);
   // vec3 drgb = dither8x8(gl_FragCoord.xy / 2., rgb);
-  // gl_FragColor = vec4(drgb, 1.0);
-  gl_FragColor = vec4(abs(rgb - rgb2) * m7, 1.0);
+  // gl_FragColor = vec4(bands.xzy * finalBit, 1.0);
+  gl_FragColor = vec4(color, 1.0);
+  // gl_FragColor = vec4(abs(rgb - rgb2) * m7, 1.0);
 }

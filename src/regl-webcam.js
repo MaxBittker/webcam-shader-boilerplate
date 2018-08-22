@@ -60,7 +60,6 @@ function setupWebcam(options) {
     startbutton.onclick = function() {
       console.log("play!");
       tryGetUserMedia();
-      // startVideo();
     };
 
     function gumSuccess(stream) {
@@ -87,6 +86,7 @@ function setupWebcam(options) {
         var h = videoHeight;
         video.height = h;
         video.width = w;
+        video.volume = 0;
         ctracker.init();
         ctracker.start(video);
         // positionLoop();

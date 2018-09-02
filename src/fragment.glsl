@@ -241,6 +241,9 @@ void main() {
   float s = 0.1 * ifd * 4.;
   vec2 mid = (eye1 + eye2) * 0.5;
 
+  // if (ed > ifd * 0.5) {
+  flipwcord = mod(flipwcord, vec2(0.2, 0.3)) + eye1 - vec2(0.0, 0.1);
+  // }
   float xError = 0.0;
   for (int xLook = 0; xLook < lookupSize; xLook++) {
     float grayscale =
@@ -261,13 +264,13 @@ void main() {
 
   float finalGrayscale = getGrayscale(flipwcord);
   finalGrayscale += xError * 0.5 + yError * 0.5;
-  float finalBit = finalGrayscale >= 0.5 ? 1.0 : 0.0;
+  float finalBit = finalGrayscale >= 0.5 ? 2.0 : 0.8;
 
   // gl_FragColor = vec4(finalGrayscale, finalGrayscale, finalGrayscale, 1);
-  gl_FragColor = vec4(finalBit, finalBit, finalBit, 1);
-
+  gl_FragColor = vec4(finalBit, finalBit, finalBit, 1) * bands;
+  gl_FragColor.a = 1.0;
   // gl_FragColor = vec4(vec3(1.0) * getGrayscale(flipwcord), 1.0);
-  // gl_FragColor.rgb = ither8x8(flipwcord, vec3(getGrayscale(flipwcord)));
+  // gl_FragColor.rgb = dither8x8(flipwcord, vec3(getGrayscale(flipwcord)));
 
   // float a = t * m6;
   // a += bands.y * m5;
@@ -275,25 +278,26 @@ void main() {
   // vec3 rgb = texture2D(webcam, flipwcord - offset).rgb * 0.95;
   // vec3 rgb2 = texture2D(webcam, flipwcord + offset).rgb * 0.95;
 
-  vec3 color = vec3(00.0);
+  vec3 color = vec3(001.0);
   const int nL = 5;
   for (int leaf = 0; leaf < nL; leaf++) {
-    float a = float(leaf) * 3.14 * 2. / float(nL);
+    float a = float(leaf) * 3.14 * 1. / float(nL);
     a += t * m6;
     vec2 offset =
         pixel * 50. * vec2(sin(a), cos(a)) * m3 * (bands.x - m4 * 0.1);
     vec3 rgb = texture2D(webcam, flipwcord - offset).rgb * 0.95;
 
     // color = min(color, rgb);
-    color = abs(color - rgb);
+    // color = abs(color - rgb);
   }
-  color = mod(color, 1.0);
+  // color *=float(nL);
+  // color = mod(color, 1.0);
   // gl_FragColor
   // rgb += vec3(1.0) * t * 0.01 - ed;
   // rgb += bands.xyz * m1;
   // rgb = mod(rgb, 1.0);
   // vec3 drgb = dither8x8(gl_FragCoord.xy / 2., rgb);
   // gl_FragColor = vec4(bands.xzy * finalBit, 1.0);
-  gl_FragColor = vec4(color, 1.0);
+  // gl_FragColor = vec4(color, 1.0);
   // gl_FragColor = vec4(abs(rgb - rgb2) * m7, 1.0);
 }

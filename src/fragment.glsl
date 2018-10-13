@@ -4,6 +4,7 @@ uniform vec2 resolution;
 uniform sampler2D backBuffer;
 uniform sampler2D webcam;
 uniform vec2 videoResolution;
+uniform vec2 scaledVideoResolution;
 uniform vec2 eyes[2];
 uniform float m[8]; // midi
 float m0 = m[0];
@@ -220,10 +221,29 @@ float getGrayscale(vec2 coords) {
   vec3 sourcePixel = texture2D(webcam, clamp(coords, 0., 1.0)).rgb;
   return luma(sourcePixel);
 }
+float manhattan(vec2 i) { return i.x + i.y; }
+float maxd(vec2 i) { return max(abs(i.x), abs(i.y)); }
 void main() {
-  vec2 pos = squareFrame(resolution);
-  // vec3 color;
-  vec2 webcamCoord = (uv * 0.5 + vec2(0.5)) * resolution / videoResolution;
+  vec2 uvN = (uv * 0.5) + vec2(0.5);
+  // vec2 pos = squareFrame(resolution);
+  vec2 resRatio = scaledVideoResolution / resolution;
+  vec2 webcamCoord = uv / resRatio;
+
+  webcamCoord /= 2.0;
+  webcamCoord += vec2(0.5);
+  // webcamCoord -= vec2(
+  //   - (videoResolution.x - resolution.x
+  // , 0.1);
+  // if(webcamCoord.x>1.0){
+  // webcamCoord = vec2(0.0);
+  // }
+  // webcamCoord = mod(webcamCoord, 1.0);
+  float x = maxd(floor(uv * 6.));
+  if (x > 2.0) {
+    webcamCoord += uv * x / (-15.);
+  }
+  // vec2 webcamCoord = ((pos+vec2(1.25,vec2(1.0))) * 0.5) * sqRes /
+  // videoResolution;
   vec2 flipwcord = vec2(1.) - webcamCoord;
   // flipwcord.x = webcamCoord.x;
   vec2 eye1 = eyes[0] / videoResolution;
@@ -242,54 +262,31 @@ void main() {
   vec2 mid = (eye1 + eye2) * 0.5;
 
   // if (ed > ifd * 0.5) {
-  flipwcord = mod(flipwcord, vec2(0.2, 0.3)) + eye1 - vec2(0.0, 0.1);
+  // flipwcord = mod(flipwcord, vec2(0.3, 0.4)) + eye1 - vec2(0.1, 0.15);
   // }
-  float xError = 0.0;
-  for (int xLook = 0; xLook < lookupSize; xLook++) {
-    float grayscale =
-        getGrayscale(flipwcord + vec2(-lookupSize + xLook, 0) * vp);
-    grayscale += xError;
-    float bit = grayscale >= 0.5 ? 1.0 : 0.0;
-    xError = (grayscale - bit) * errorCarry;
-  }
+  // float xError = 0.0;
+  // for (int xLook = 0; xLook < lookupSize; xLook++) {
+  //   float grayscale =
+  //       getGrayscale(flipwcord + vec2(-lookupSize + xLook, 0) * vp);
+  //   grayscale += xError;
+  //   float bit = grayscale >= 0.5 ? 1.0 : 0.0;
+  //   xError = (grayscale - bit) * errorCarry;
+  // }
+  // float yError = 0.0;
+  // for (int yLook = 0; yLook < lookupSize; yLook++) {
+  //   float grayscale =
+  //       getGrayscale(flipwcord + vec2(0, -lookupSize + yLook) * vp);
+  //   grayscale += yError;
+  //   float bit = grayscale >= 0.5 ? 1.0 : 0.0;
+  //   yError = (grayscale - bit) * errorCarry;
+  // }
+  // float finalGrayscale = getGrayscale(flipwcord);
+  // finalGrayscale += xError * 0.5 + yError * 0.5;
+  // float finalBit = finalGrayscale >= 0.5 ? 2.0 : 0.8;
 
-  float yError = 0.0;
-  for (int yLook = 0; yLook < lookupSize; yLook++) {
-    float grayscale =
-        getGrayscale(flipwcord + vec2(0, -lookupSize + yLook) * vp);
-    grayscale += yError;
-    float bit = grayscale >= 0.5 ? 1.0 : 0.0;
-    yError = (grayscale - bit) * errorCarry;
-  }
-
-  float finalGrayscale = getGrayscale(flipwcord);
-  finalGrayscale += xError * 0.5 + yError * 0.5;
-  float finalBit = finalGrayscale >= 0.5 ? 2.0 : 0.8;
-
-  // gl_FragColor = vec4(finalGrayscale, finalGrayscale, finalGrayscale, 1);
-  gl_FragColor = vec4(finalBit, finalBit, finalBit, 1) * bands;
+  gl_FragColor = vec4(webcamColor, 1);
+  // gl_FragColor = vec4(finalBit, finalBit, finalBit, 1) * bands;
   gl_FragColor.a = 1.0;
-  // gl_FragColor = vec4(vec3(1.0) * getGrayscale(flipwcord), 1.0);
-  // gl_FragColor.rgb = dither8x8(flipwcord, vec3(getGrayscale(flipwcord)));
-
-  // float a = t * m6;
-  // a += bands.y * m5;
-  // vec2 offset = pixel * 50. * vec2(sin(a), cos(a)) * m3 * bands.x;
-  // vec3 rgb = texture2D(webcam, flipwcord - offset).rgb * 0.95;
-  // vec3 rgb2 = texture2D(webcam, flipwcord + offset).rgb * 0.95;
-
-  vec3 color = vec3(001.0);
-  const int nL = 5;
-  for (int leaf = 0; leaf < nL; leaf++) {
-    float a = float(leaf) * 3.14 * 1. / float(nL);
-    a += t * m6;
-    vec2 offset =
-        pixel * 50. * vec2(sin(a), cos(a)) * m3 * (bands.x - m4 * 0.1);
-    vec3 rgb = texture2D(webcam, flipwcord - offset).rgb * 0.95;
-
-    // color = min(color, rgb);
-    // color = abs(color - rgb);
-  }
   // color *=float(nL);
   // color = mod(color, 1.0);
   // gl_FragColor

@@ -44,7 +44,7 @@ function setupWebcam(options) {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
-          audio: true
+          audio: false
         })
         .then(gumSuccess)
         .catch(e => {
@@ -68,8 +68,8 @@ function setupWebcam(options) {
         fftSize: 256,
         smoothingTimeConstant: 0.5
       });
-      let source = context.createMediaStreamSource(stream);
-      source.connect(analyser);
+      // let source = context.createMediaStreamSource(stream);
+      // source.connect(analyser);
 
       if ("srcObject" in video) {
         video.srcObject = stream;

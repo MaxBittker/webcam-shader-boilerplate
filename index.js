@@ -42,6 +42,13 @@ let cam = setupWebcam({
           viewportWidth,
           viewportHeight
         ],
+        scaledVideoResolution: ({ viewportWidth: vW, viewportHeight: vH }) => {
+          let i;
+          return (i =
+            vW / vH > videoWidth / videoHeight
+              ? [videoWidth * (vH / videoHeight), vH]
+              : [vW, videoHeight * (vW / videoWidth)]);
+        },
         backBuffer: lastFrame,
         "eyes[0]": () => {
           let positions = ct.getCurrentPosition();

@@ -1,7 +1,7 @@
 # webcam-shader-boilerplate
 
 This is an opinionated starter repo for writing fragment shader code that interacts with webcam input in the browser!
-
+`npm install` then
 `npm run start` to start the devserver.
 
 Annotated dependency list:

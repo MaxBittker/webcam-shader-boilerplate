@@ -27,9 +27,8 @@ let last32 = [0, 0];
 let cam = setupWebcam({
   regl,
   done: (webcam, { audio, videoWidth, videoHeight, ctracker }) => {
-    ct = ctracker;
-    window.ct = ct;
-    console.log(ct);
+    // ct = ctracker;
+    // window.ct = ct;
     // console.log(ctracker.getCurrentPosition())
     // console.log(ctracker.getCurrentPosition())
     let drawTriangle = regl({
@@ -59,23 +58,7 @@ let cam = setupWebcam({
             return last27;
           }
         },
-        "eyes[1]": () => {
-          let positions = ct.getCurrentPosition();
-          if (positions) {
-            last32 = positions[32];
-            return positions[32];
-          } else {
-            return last32;
-          }
-        },
-        "m[0]": () => getMidiValue(0),
-        "m[1]": () => getMidiValue(1),
-        "m[2]": () => getMidiValue(2),
-        "m[3]": () => getMidiValue(3),
-        "m[4]": () => getMidiValue(4),
-        "m[5]": () => getMidiValue(5),
-        "m[6]": () => getMidiValue(6),
-        "m[7]": () => getMidiValue(7),
+
         bands: () => {
           let bands = new Array(4);
           var k = 0;

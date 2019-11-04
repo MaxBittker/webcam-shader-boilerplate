@@ -87,8 +87,8 @@ function setupWebcam(options) {
         video.height = h;
         video.width = w;
         video.volume = 0;
-        ctracker.init();
-        ctracker.start(video);
+        // ctracker.init();
+        // ctracker.start(video);
         // positionLoop();
 
         regl.frame(() => webcam.subimage(video));

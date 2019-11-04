@@ -3,7 +3,7 @@ setupOverlay();
 
 const regl = require("regl")({ pixelRatio: 0.75 });
 const { setupWebcam } = require("./src/regl-webcam");
-let { getMidiValue } = require("./src/midi");
+// let { getMidiValue } = require("./src/midi");
 
 let shaders = require("./src/pack.shader.js");
 let vert = shaders.vertex;

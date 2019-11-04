@@ -29,5 +29,6 @@ void main() {
   vec3 webcamColor = texture2D(webcam, flipwcord).rgb;
   vec3 backBufferColor = texture2D(backBuffer, uvN).rgb;
 
-  gl_FragColor = vec4(webcamColor, 1);
+  vec3 color = vec3(1.0, 0.0, 0.);
+  gl_FragColor = vec4(color, 1);
 }

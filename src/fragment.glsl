@@ -231,35 +231,46 @@ void main() {
 
   webcamCoord /= 2.0;
   webcamCoord += vec2(0.5);
-  // webcamCoord -= vec2(
-  //   - (videoResolution.x - resolution.x
-  // , 0.1);
-  // if(webcamCoord.x>1.0){
-  // webcamCoord = vec2(0.0);
+  // // webcamCoord -= vec2(
+  // //   - (videoResolution.x - resolution.x
+  // // , 0.1);
+  // // if(webcamCoord.x>1.0){
+  // // webcamCoord = vec2(0.0);
+  // // }
+  // // webcamCoord = mod(webcamCoord, 1.0);
+  // float x = maxd(floor(uv * 6.));
+  // if (x > 2.0) {
+  //   webcamCoord += uv * x / (-15.);
   // }
-  // webcamCoord = mod(webcamCoord, 1.0);
-  float x = maxd(floor(uv * 6.));
-  if (x > 2.0) {
-    webcamCoord += uv * x / (-15.);
-  }
-  // vec2 webcamCoord = ((pos+vec2(1.25,vec2(1.0))) * 0.5) * sqRes /
-  // videoResolution;
+  // // vec2 webcamCoord = ((pos+vec2(1.25,vec2(1.0))) * 0.5) * sqRes /
+  // // videoResolution;
   vec2 flipwcord = vec2(1.) - webcamCoord;
-  // flipwcord.x = webcamCoord.x;
-  vec2 eye1 = eyes[0] / videoResolution;
-  vec2 eye2 = eyes[1] / videoResolution;
-  vec2 textCoord = uv * 0.5 + vec2(0.5);
-  vec2 closeEye =
-      distance(eye1, flipwcord) < distance(eye2, flipwcord) ? eye1 : eye2;
-  vec2 suck = -2.0 * pixel * normalize(flipwcord - closeEye) *
-              random(uv + t * vec2(1.0));
-  vec3 webcamColor = texture2D(webcam, flipwcord).rgb * 0.95;
-  float ed = smin(distance(eye1, flipwcord), distance(eye2, flipwcord), 0.01);
+  // flipwcord.x = -webcamCoord.x;
+  // vec2 eye1 = eyes[0] / videoResolution;
+  // vec2 eye2 = eyes[1] / videoResolution;
+  // vec2 textCoord = uv * 0.5 + vec2(0.5);
+  // vec2 closeEye =
+  //     distance(eye1, flipwcord) < distance(eye2, flipwcord) ? eye1 : eye2;
+  // vec2 suck = -2.0 * pixel * normalize(flipwcord - closeEye) *
+  //             random(uv + t * vec2(1.0));
+  vec3 webcamColor = texture2D(webcam, flipwcord).rgb;
 
-  float ifd = distance(eye1, eye2);
+  vec3 backBufferColor = texture2D(backBuffer, uvN).rgb;
+  //  * 0.995;
+  float fadeAmt = 1.0;
+  // if (noise(vec3(uv * 100. + vec2(2. * t) * 20., t * 10.)) > 0.5) {
+  if (random(uv * t) > 0.3) {
+    fadeAmt = 0.99;
+  }
+  backBufferColor *= fadeAmt;
 
-  float s = 0.1 * ifd * 4.;
-  vec2 mid = (eye1 + eye2) * 0.5;
+  // float ed = smin(distance(eye1, flipwcord), distance(eye2, flipwcord),
+  // 0.01);
+
+  // float ifd = distance(eye1, eye2);
+
+  // float s = 0.1 * ifd * 4.;
+  // vec2 mid = (eye1 + eye2) * 0.5;
 
   // if (ed > ifd * 0.5) {
   // flipwcord = mod(flipwcord, vec2(0.3, 0.4)) + eye1 - vec2(0.1, 0.15);
@@ -283,18 +294,20 @@ void main() {
   // float finalGrayscale = getGrayscale(flipwcord);
   // finalGrayscale += xError * 0.5 + yError * 0.5;
   // float finalBit = finalGrayscale >= 0.5 ? 2.0 : 0.8;
-
-  gl_FragColor = vec4(webcamColor, 1);
+  // webcamColor = max(webcamColor, backBufferColor);
+  // gl_FragColor = vec4(webcamColor, 1) ;
+  //  dither(uvN,);
   // gl_FragColor = vec4(finalBit, finalBit, finalBit, 1) * bands;
-  gl_FragColor.a = 1.0;
+  // gl_FragColor.a = 1.0;
   // color *=float(nL);
   // color = mod(color, 1.0);
   // gl_FragColor
   // rgb += vec3(1.0) * t * 0.01 - ed;
   // rgb += bands.xyz * m1;
   // rgb = mod(rgb, 1.0);
-  // vec3 drgb = dither8x8(gl_FragCoord.xy / 2., rgb);
+  vec3 drgb = dither8x8(gl_FragCoord.xy / 2., webcamColor);
   // gl_FragColor = vec4(bands.xzy * finalBit, 1.0);
   // gl_FragColor = vec4(color, 1.0);
-  // gl_FragColor = vec4(abs(rgb - rgb2) * m7, 1.0);
+  gl_FragColor.rgb = drgb;
+  ;
 }
